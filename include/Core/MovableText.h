@@ -49,7 +49,7 @@ namespace Ogre
 
 		Camera *mpCam; 
 		RenderWindow *mpWin; 
-		Font *mpFont; 
+		FontPtr mpFont; 
 		MaterialPtr mpMaterial; 
 		MaterialPtr mpBackgroundMaterial; 
 

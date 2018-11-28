@@ -19,7 +19,7 @@ using namespace Ogre;
 MovableText::MovableText(const String &name, const String &caption, const String &fontName, Real charHeight, const ColourValue &color) 
 : mpCam(NULL) 
 , mpWin(NULL) 
-, mpFont(NULL) 
+, mpFont() 
 , mName(name) 
 , mCaption(caption) 
 , mFontName(fontName) 
@@ -65,7 +65,7 @@ void MovableText::setFontName(const String &fontName)
 	if (mFontName != fontName || !mpMaterial || !mpFont)
 	{ 
 		mFontName = fontName; 
-		mpFont = (Font *)FontManager::getSingleton().getByName(mFontName).get();
+		mpFont = FontManager::getSingletonPtr()->getByName(mFontName);
 		if (!mpFont) 
 			throw Exception(Exception::ERR_ITEM_NOT_FOUND, "Could not find font " + fontName, "MovableText::setFontName"); 
 

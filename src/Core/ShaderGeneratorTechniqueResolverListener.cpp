@@ -22,10 +22,11 @@
 			bool techniqueCreated;
 
 			// Create shader generated technique for this material.
-			techniqueCreated = mShaderGenerator->createShaderBasedTechnique(
-				originalMaterial->getName(), 
-				Ogre::MaterialManager::DEFAULT_SCHEME_NAME, 
-				schemeName);	
+            techniqueCreated = mShaderGenerator->createShaderBasedTechnique (*originalMaterial, Ogre::MaterialManager::DEFAULT_SCHEME_NAME, schemeName);
+               /* createShaderBasedTechnique (
+                    originalMaterial,
+                    Ogre::MaterialManager::DEFAULT_SCHEME_NAME,
+                    schemeName);*/
 
 			// Case technique registration succeeded.
 			if (techniqueCreated)

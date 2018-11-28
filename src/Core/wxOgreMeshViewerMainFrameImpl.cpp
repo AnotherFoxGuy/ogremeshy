@@ -484,7 +484,7 @@ void MeshyMainFrameImpl::initOgre( bool bForceSetup )
 
 	m_root = new Ogre::Root(c_pluginsCfg + "Plugins.cfg", m_configDirectory + "ogre.cfg", m_configDirectory + "Ogre.log");
 	if( bForceSetup || !m_root->restoreConfig() )
-		m_root->showConfigDialog();
+		m_root->showConfigDialog(NULL);
 
 	m_root->initialise( false );
 
@@ -1492,7 +1492,7 @@ void MeshyMainFrameImpl::takeSnapshot( bool askLocation )
 		}
 		catch( Ogre::Exception &e )
 		{
-			if( e.getNumber() == Ogre::Exception::ERR_CANNOT_WRITE_TO_FILE && !askLocation )
+			if( e.ERR_CANNOT_WRITE_TO_FILE && !askLocation )
 			{
 				//This could've happened because the documents dir doesn't exist and/or we don't
 				//have write access to file. Try once more, this time asking the user where
@@ -1902,7 +1902,7 @@ bool MeshyMainFrameImpl::initializeRTShaderSystem(Ogre::SceneManager* sceneMgr)
 			// when running from different directories.
 			while( itor != end && !coreLibsFound )
 			{
-				if( (*itor)->archive->getName().find("RTShaderLib") != Ogre::String::npos )
+				if( itor->archive->getName().find("RTShaderLib") != Ogre::String::npos )
 					coreLibsFound = true;
 				++itor;
 			}

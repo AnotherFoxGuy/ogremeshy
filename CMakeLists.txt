@@ -3,75 +3,93 @@
 # free to make use of it in any way you like.
 #-------------------------------------------------------------------
 
-project( OgreMeshy )
+project(OgreMeshy)
 
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.10)
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+set(CMAKE_CXX_STANDARD 11)
 
-set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG" )
+set(MESHY_USE_RTSS TRUE CACHE BOOL "use RTSS")
 
-if( CMAKE_BUILD_TYPE STREQUAL "" )
-	set( CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING "One of: Debug Release RelWithDebInfo MinSizeRel." FORCE )
-endif()
 
-include( CMake/Dependencies/OGRE.cmake )
-include( CMake/Dependencies/wxWidgets.cmake )
-include( CMake/Install.cmake )
+# Download cotire automatically
+if (NOT EXISTS "${CMAKE_BINARY_DIR}/cotire.cmake")
+    message(STATUS "Downloading cotire.cmake from https://github.com/sakra/cotire/")
+    file(DOWNLOAD "https://raw.githubusercontent.com/sakra/cotire/master/CMake/cotire.cmake"
+            "${CMAKE_BINARY_DIR}/cotire.cmake")
+endif ()
 
-setupOgre( OGRE_SOURCE, OGRE_BINARIES, OGRE_LIBRARIES )
-setupWxWidgets( wxWidgets_LIBRARIES GTK2_LIBRARIES OPENGL_LIBRARIES )
+include(${CMAKE_BINARY_DIR}/cotire.cmake)
+
+include(CMake/pmm.cmake)
+pmm(DEBUG CONAN 
+    REMOTES ror-dependencies https://api.bintray.com/conan/anotherfoxguy/ror-dependencies
+    bincrafters-public-conan https://api.bintray.com/conan/bincrafters/public-conan
+ )
+
+if (UNIX)
+    find_package(wxWidgets REQUIRED core base aui adv)
+    find_package(GTK2 REQUIRED gtk)
+endif ()
+
+include(CMake/Install.cmake)
+
 
 # Setup our application
-set( EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_SOURCE_DIR}/bin/${CMAKE_BUILD_TYPE}" )
-if( MSVC )
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP /arch:SSE2")
-	add_definitions( -DUNICODE -D_UNICODE )
+if (MSVC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
+    add_definitions(-DUNICODE -D_UNICODE)
+endif ()
+
+file(GLOB_RECURSE SOURCES "${CMAKE_SOURCE_DIR}/src/*.cpp")
+file(GLOB_RECURSE HEADERS "${CMAKE_SOURCE_DIR}/include/*.h")
+
+include_directories("${CMAKE_SOURCE_DIR}/include")
+
+if (WIN32)
+    # Add embedded icon
+    set(SOURCES ${SOURCES}  "${CMAKE_SOURCE_DIR}/scripts/Resources/Resource.rc")
+endif ()
+
+add_executable(${PROJECT_NAME} WIN32 ${SOURCES} ${HEADERS})
+
+if (WIN32)
+    target_include_directories(${PROJECT_NAME} PRIVATE CONAN_PKG::OGRE CONAN_PKG::wxwidgets)
+    target_link_libraries(${PROJECT_NAME} PRIVATE CONAN_PKG::OGRE CONAN_PKG::wxwidgets)
+else ()
+    target_include_directories(${PROJECT_NAME} PRIVATE CONAN_PKG::OGRE)
+    target_link_libraries(${PROJECT_NAME} PRIVATE CONAN_PKG::OGRE)
+
+    include_directories(${GTK2_INCLUDE_DIRS})
+    add_definitions(${GTK2_DEFINITIONS})
+    target_link_libraries(${PROJECT_NAME} PRIVATE ${GTK2_LIBRARIES})
+
+
+    include(${wxWidgets_USE_FILE})
+    add_definitions(-DwxUSE_GUI=1)
+    target_link_libraries(${PROJECT_NAME} PRIVATE ${wxWidgets_LIBRARIES})
+endif ()
+
+if(MESHY_USE_RTSS)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE MESHY_USE_RTSS)
 endif()
 
-macro( add_recursive dir retVal )
-	file( GLOB_RECURSE ${retVal} ${dir}/*.h ${dir}/*.cpp ${dir}/*.c )
-endmacro()
+configure_file(${CMAKE_SOURCE_DIR}/CMake/Templates/Plugins.cfg.in ${CMAKE_BINARY_DIR}/bin/plugins.cfg)
+set_target_properties(${PROJECT_NAME} PROPERTIES COTIRE_ADD_UNITY_BUILD FALSE)
+cotire(${PROJECT_NAME})
 
-include_directories( "./include" )
 
-add_recursive( ./src SOURCES )
-add_recursive( ./include HEADERS )
-if( WIN32 )
-	# Add embedded icon
-	set( SOURCES ${SOURCES} ./scripts/Resources/Resource.rc )
-endif()
-
-add_executable( ${PROJECT_NAME} WIN32 ${SOURCES} ${HEADERS} )
-target_link_libraries( ${PROJECT_NAME} ${OGRE_LIBRARIES} ${wxWidgets_LIBRARIES} )
-
-if( UNIX )
-	target_link_libraries( OgreMeshy ${GTK2_LIBRARIES} ${OPENGL_LIBRARIES} )
-endif()
-
-#Copy resources to bin folders
-macro( copy_resources BUILD_TYPE )
-	file( REMOVE_RECURSE "${CMAKE_SOURCE_DIR}/bin/${BUILD_TYPE}/Resources" )
-	file( COPY "./scripts/Resources/Fonts" DESTINATION "${CMAKE_SOURCE_DIR}/bin/${BUILD_TYPE}/Resources" )
-	file( COPY "./scripts/Resources/Icons" DESTINATION "${CMAKE_SOURCE_DIR}/bin/${BUILD_TYPE}/Resources" )
-	file( COPY "./scripts/Resources/Other" DESTINATION "${CMAKE_SOURCE_DIR}/bin/${BUILD_TYPE}/Resources" )
-	file( RENAME "${CMAKE_SOURCE_DIR}/bin/${BUILD_TYPE}/Resources/Other" "${CMAKE_SOURCE_DIR}/bin/${BUILD_TYPE}/Resources/Models" )
-	file( COPY "./scripts/Resources/Blender/Axis.material"			 DESTINATION "${CMAKE_SOURCE_DIR}/bin/${BUILD_TYPE}/Resources/Models" )
-	file( COPY "./scripts/Resources/Blender/Axis.mesh"				 DESTINATION "${CMAKE_SOURCE_DIR}/bin/${BUILD_TYPE}/Resources/Models" )
-	file( COPY "./scripts/Resources/Blender/Bones/BoneMesh.material" DESTINATION "${CMAKE_SOURCE_DIR}/bin/${BUILD_TYPE}/Resources/Models" )
-	file( COPY "./scripts/Resources/Blender/Bones/Bones.png"		 DESTINATION "${CMAKE_SOURCE_DIR}/bin/${BUILD_TYPE}/Resources/Models" )
-	file( COPY "./scripts/Resources/Blender/Bones/BoneTip.mesh"		 DESTINATION "${CMAKE_SOURCE_DIR}/bin/${BUILD_TYPE}/Resources/Models" )
-	file( COPY "./scripts/Resources/Blender/Bones/BoneGlobe.mesh"	 DESTINATION "${CMAKE_SOURCE_DIR}/bin/${BUILD_TYPE}/Resources/Models" )
-	if( USE_RTSS )
-		file( COPY "${OGRE_SOURCE}/Samples/Media/RTShaderLib"		 DESTINATION "${CMAKE_SOURCE_DIR}/bin/${BUILD_TYPE}/Resources" )
-	endif()
-
-	if( UNIX )
-		file( COPY "./scripts/Resources/OgreIcon.ico" DESTINATION "${CMAKE_SOURCE_DIR}/bin/${BUILD_TYPE}/Resources/" )
-	endif()
-endmacro()
-
-copy_resources( "Debug" )
-copy_resources( "Release" )
-copy_resources( "RelWithDebInfo" )
-copy_resources( "MinSizeRel" )
+add_custom_target(
+    copy_resources
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/scripts/Resources/Fonts  ${CMAKE_BINARY_DIR}/bin/Resources/Fonts
+	COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/scripts/Resources/Icons  ${CMAKE_BINARY_DIR}/bin/Resources/Icons
+	COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/scripts/Resources/Other  ${CMAKE_BINARY_DIR}/bin/Resources/Models
+	COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/scripts/Resources/Models ${CMAKE_BINARY_DIR}/bin/Resources/Models
+    COMMENT "Copy resources to build directory"
+    VERBATIM
+)
 
 setupInstallers()
+
+include(FeatureSummary)
+feature_summary(WHAT ALL)
