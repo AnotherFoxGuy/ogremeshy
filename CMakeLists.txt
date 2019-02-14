@@ -11,6 +11,14 @@ set(CMAKE_CXX_STANDARD 11)
 
 set(MESHY_USE_RTSS TRUE CACHE BOOL "use RTSS")
 
+# Download conan.cmake automatically
+if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
+   message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan")
+   file(DOWNLOAD "https://raw.githubusercontent.com/conan-io/cmake-conan/master/conan.cmake"
+                 "${CMAKE_BINARY_DIR}/conan.cmake")
+endif()
+
+ include(${CMAKE_BINARY_DIR}/conan.cmake)
 
 # Download cotire automatically
 if (NOT EXISTS "${CMAKE_BINARY_DIR}/cotire.cmake")
@@ -21,11 +29,9 @@ endif ()
 
 include(${CMAKE_BINARY_DIR}/cotire.cmake)
 
-include(CMake/pmm.cmake)
-pmm(DEBUG CONAN 
-    REMOTES ror-dependencies https://api.bintray.com/conan/anotherfoxguy/ror-dependencies
-    bincrafters-public-conan https://api.bintray.com/conan/bincrafters/public-conan
- )
+conan_cmake_run(CONANFILE conanfile.txt 
+                BASIC_SETUP CMAKE_TARGETS
+                BUILD missing)
 
 if (UNIX)
     find_package(wxWidgets REQUIRED core base aui adv)
@@ -34,6 +40,9 @@ endif ()
 
 include(CMake/Install.cmake)
 
+SET(RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/")
+SET(LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/")
+SET(ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/")
 
 # Setup our application
 if (MSVC)
@@ -47,6 +56,12 @@ file(GLOB_RECURSE HEADERS "${CMAKE_SOURCE_DIR}/include/*.h")
 include_directories("${CMAKE_SOURCE_DIR}/include")
 
 if (WIN32)
+	# fix executable paths for windows
+    SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${RUNTIME_OUTPUT_DIRECTORY})
+    SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${RUNTIME_OUTPUT_DIRECTORY})
+    SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO ${RUNTIME_OUTPUT_DIRECTORY})
+    SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${RUNTIME_OUTPUT_DIRECTORY})
+
     # Add embedded icon
     set(SOURCES ${SOURCES}  "${CMAKE_SOURCE_DIR}/scripts/Resources/Resource.rc")
 endif ()

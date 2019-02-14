@@ -2,7 +2,7 @@
 cmake
 
 [requires]
-OGRE/1.11.4@anotherfoxguy/stable
+OGRE/1.11.5@anotherfoxguy/stable
 wxwidgets/3.1.1@bincrafters/stable
 
 

@@ -10,6 +10,8 @@
 #ifndef __include_MovableText_H__ 
 #define __include_MovableText_H__ 
 
+#include "OgreFont.h"
+
 namespace Ogre
 { 
 	class Font;

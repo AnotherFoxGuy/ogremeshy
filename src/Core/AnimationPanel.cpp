@@ -237,49 +237,54 @@ void AnimationPanel::hideBones()
 //Input:
 //	1) Parent Node which will be linked with their children
 //-----------------------------------------------------------------------------
-void AnimationPanel::createBoneTip( Ogre::Bone *parentBone )
+void AnimationPanel::createBoneTip (Ogre::Bone *parentBone)
 {
-	Ogre::Bone::ChildNodeIterator childIt = parentBone->getChildIterator();
-	while( childIt.hasMoreElements() )
+	Ogre::Bone::ChildNodeMap childNodeMapCopy = parentBone->getChildren ();
+
+	Ogre::Bone::ChildNodeMap::const_iterator itor = childNodeMapCopy.begin ();
+	Ogre::Bone::ChildNodeMap::const_iterator end = childNodeMapCopy.end ();
+	while (itor != end)
 	{
 		VisualLink visualLink;
 
 		//Ugh, unsafe upcast
-		Ogre::Bone *childBone	= static_cast<Ogre::Bone*>(childIt.getNext());
-		visualLink.linkedChild	= childBone;
+		Ogre::Bone *childBone = static_cast<Ogre::Bone*>(*itor);
+		visualLink.linkedChild = childBone;
 
 		//TODO: Does anyone know a better way to skip (our own?) TagPoints?
-		if( dynamic_cast<Ogre::TagPoint*>(childBone) != 0 )
+		if (dynamic_cast<Ogre::TagPoint*>(childBone) != 0)
 			continue;
 
 		//Link children of children
-		if( childBone->numChildren() )
-			createBoneTip( childBone );
+		if (childBone->numChildren ())
+			createBoneTip (childBone);
 
 		//Create an entity between parentNode and childBone
-		Ogre::Vector3 vDif( parentBone->_getDerivedOrientation().Inverse() *
-							(childBone->_getDerivedPosition() - parentBone->_getDerivedPosition()) );
-		const float diffLength = vDif.normalise();
-		const Ogre::Quaternion qRot( Ogre::Vector3::UNIT_Y.getRotationTo( vDif ) );
+		Ogre::Vector3 vDif (parentBone->_getDerivedOrientation ().Inverse () *
+			(childBone->_getDerivedPosition () - parentBone->_getDerivedPosition ()));
+		const float diffLength = vDif.normalise ();
+		const Ogre::Quaternion qRot (Ogre::Vector3::UNIT_Y.getRotationTo (vDif));
 
 		//Skip Bones in the same position (flat tips only cause confusion)
-		if( diffLength > 1e-6f )
+		if (diffLength > 1e-6f)
 		{
-			visualLink.visualBone.entity = m_sceneManager->createEntity( "BoneTip" +
-															Ogre::StringConverter::toString(m_entitiesId++),
-															"BoneTip.mesh", c_InterMeshPermGroup );
-			visualLink.visualBone.tagNode = m_loadedEntity->attachObjectToBone(
-															parentBone->getName(),
-															visualLink.visualBone.entity, qRot );
-			visualLink.visualBone.tagNode->setScale( m_loadedEntity->getBoundingRadius() * m_visulBoneSize,
-													 diffLength,
-													 m_loadedEntity->getBoundingRadius() * m_visulBoneSize );
-			visualLink.visualBone.tagNode->setInheritScale( false );
+			visualLink.visualBone.entity = m_sceneManager->createEntity ("BoneTip" +
+				Ogre::StringConverter::toString (m_entitiesId++),
+				"BoneTip.mesh", c_InterMeshPermGroup);
+			visualLink.visualBone.tagNode = m_loadedEntity->attachObjectToBone (
+				parentBone->getName (),
+				visualLink.visualBone.entity, qRot);
+			visualLink.visualBone.tagNode->setScale (m_loadedEntity->getBoundingRadius () * m_visulBoneSize,
+				diffLength,
+				m_loadedEntity->getBoundingRadius () * m_visulBoneSize);
+			visualLink.visualBone.tagNode->setInheritScale (false);
 
 			//Tips are rendered before the globe to make globe's colours sharper
-			visualLink.visualBone.entity->setRenderQueueGroup( Ogre::RENDER_QUEUE_SKIES_LATE - 1 );
-			m_visualLinks.push_back( visualLink );
+			visualLink.visualBone.entity->setRenderQueueGroup (Ogre::RENDER_QUEUE_SKIES_LATE - 1);
+			m_visualLinks.push_back (visualLink);
 		}
+
+		++itor;
 	}
 }
 

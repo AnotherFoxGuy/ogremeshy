@@ -225,22 +225,6 @@ MeshyMainFrameImpl::MeshyMainFrameImpl( wxWindow* parent, const CmdSettings &cmd
 
 	loadSettings();
 
-	if( m_numRuns == OGRE_MESHY_NUM_RUNS_BEFORE_MSG )
-	{
-		wxAboutDialogInfo info;
-		info.SetName(_T("Please Donate"));
-		info.SetDescription(
-wxT("It seems you like Ogre Meshy. This program is free, and as such you're not required to pay.\n")
-wxT("If you really enjoy this program, we would like to ask you to donate by clicking the link below.\n")
-wxT("It really helps us maintaining this program. This message will appear only once.\n")
-wxT("If the link doesn't work, use this url: www.yosoygames.com.ar/wp/ogre-meshy\n")
-wxT("Thank you :)"));
-		info.SetWebSite( wxT( "http://www.yosoygames.com.ar/wp/ogre-meshy/" ),
-						 wxT( ">>  PLEASE DONATE  <<" ) );
-		wxAboutBox( info );
-	}
-	++m_numRuns;
-
 	if( cmdSettings.resoucesCfgPath != wxT("") )
 		loadResourcesCfg( cmdSettings.resoucesCfgPath );
 
@@ -657,28 +641,27 @@ void MeshyMainFrameImpl::showAboutBox()
 	Ogre::String ogreVersion = Ogre::StringConverter::toString( OGRE_VERSION_MAJOR ) + "." +
 								Ogre::StringConverter::toString( OGRE_VERSION_MINOR ) + "." +
 								Ogre::StringConverter::toString( OGRE_VERSION_PATCH ) +
-								" (" OGRE_VERSION_SUFFIX ", " OGRE_VERSION_NAME ")";
-	wxString descLinked = wxString( ("\nLinked against:\n"
+								" (" OGRE_VERSION_NAME ")";
+	wxString descLinked = wxString( ("\nLinked against: \n"
 							"\t* Ogre " + ogreVersion + "\n"
 							"\t* wxWidgets " ).c_str(), wxConvUTF8 ) + wxVERSION_NUM_DOT_STRING_T +
 							wxString( "\n", wxConvUTF8 );
 
 	info.SetName(_T("Ogre Meshy"));
 #ifdef __WXMSW__
-	info.SetVersion(wxT("1.6"));
+	info.SetVersion(wxT("1.11"));
 #else
-	info.SetVersion(wxT("1.6 for Linux beta"));
+	info.SetVersion(wxT("1.11 for Linux beta"));
 #endif
     info.SetDescription(_T("Simple application to view mesh properties\n") + descLinked);
     info.SetCopyright(_T("(C) 2010-2015 Matias N. Goldberg \"dark_sylinc\""));
+    info.SetCopyright(_T("(C) 2015-2019 Edgar (Edgar@AnotherFoxGuy.com)"));
+	info.AddDeveloper(_T("AnotherFoxGuy"));
 	info.AddDeveloper(_T("Matias N. Goldberg - dark_sylinc"));
 	info.AddDeveloper(_T("Thomas Fischer - tdev"));
 	info.AddDeveloper(_T("Alberto Toglia - toglia"));
 	info.AddDeveloper(_T("Transporter"));
 	info.AddArtist(wxT("\nMatias N. Goldberg"));
-	info.AddArtist( wxT("\nRogerio de Souza Santos (File.png, Reload.png & ChangeBGColour.png)") );
-	info.SetWebSite( wxT( "http://www.yosoygames.com.ar/wp/ogre-meshy/" ),
-					 wxT( ">>*  PLEASE DONATE  <<" ) );
 
     wxAboutBox( info );
 }
@@ -740,7 +723,7 @@ void MeshyMainFrameImpl::openMesh( const std::string &directory, const std::stri
 		m_animationPanel->meshUnload();
 		m_animPosePanel->meshUnload();
 
-		m_meshSceneNode->getParentSceneNode()->removeAndDestroyChild( m_meshSceneNode->getName() );
+		m_meshSceneNode->getParentSceneNode()->removeAndDestroyChild( m_meshSceneNode );
 		m_sceneManager->destroyEntity( m_meshEntity );
 
 		//Disable reload option
@@ -1107,7 +1090,7 @@ void MeshyMainFrameImpl::hideAxis()
 	if( m_axisNode )
 	{
 		Ogre::Entity *entity = static_cast<Ogre::Entity*>(m_axisNode->getAttachedObject(0));
-		m_axisNode->getParentSceneNode()->removeAndDestroyChild( m_axisNode->getName() );
+		m_axisNode->getParentSceneNode()->removeAndDestroyChild( m_axisNode );
 		m_sceneManager->destroyEntity( entity );
 
 		m_axisNode = 0;
@@ -1206,7 +1189,7 @@ void MeshyMainFrameImpl::hideGrid()
 	if( m_gridNode )
 	{
 		Ogre::Entity *entity = static_cast<Ogre::Entity*>(m_gridNode->getAttachedObject(0));
-		m_gridNode->getParentSceneNode()->removeAndDestroyChild( m_gridNode->getName() );
+		m_gridNode->getParentSceneNode()->removeAndDestroyChild( m_gridNode );
 		m_sceneManager->destroyEntity( entity );
 
 		m_gridNode = 0;
