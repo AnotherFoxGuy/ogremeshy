@@ -7,31 +7,15 @@ project(OgreMeshy)
 
 cmake_minimum_required(VERSION 3.10)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-set(CMAKE_CXX_STANDARD 11)
+#set(CMAKE_CXX_STANDARD 14)
 
 set(MESHY_USE_RTSS TRUE CACHE BOOL "use RTSS")
 
-# Download conan.cmake automatically
-if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
-   message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan")
-   file(DOWNLOAD "https://raw.githubusercontent.com/conan-io/cmake-conan/master/conan.cmake"
-                 "${CMAKE_BINARY_DIR}/conan.cmake")
-endif()
+include(CMake/pmm.cmake)
+pmm(CONAN REMOTES ror-dependencies https://api.bintray.com/conan/anotherfoxguy/ror-dependencies BINCRAFTERS
+        CMakeCM ROLLING)
 
- include(${CMAKE_BINARY_DIR}/conan.cmake)
-
-# Download cotire automatically
-if (NOT EXISTS "${CMAKE_BINARY_DIR}/cotire.cmake")
-    message(STATUS "Downloading cotire.cmake from https://github.com/sakra/cotire/")
-    file(DOWNLOAD "https://raw.githubusercontent.com/sakra/cotire/master/CMake/cotire.cmake"
-            "${CMAKE_BINARY_DIR}/cotire.cmake")
-endif ()
-
-include(${CMAKE_BINARY_DIR}/cotire.cmake)
-
-conan_cmake_run(CONANFILE conanfile.txt 
-                BASIC_SETUP CMAKE_TARGETS
-                BUILD missing)
+include(cotire)
 
 if (UNIX)
     find_package(wxWidgets REQUIRED core base aui adv)
