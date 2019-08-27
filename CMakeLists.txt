@@ -18,7 +18,6 @@ pmm(CONAN REMOTES ror-dependencies https://api.bintray.com/conan/anotherfoxguy/r
 include(cotire)
 
 if (UNIX)
-    find_package(wxWidgets REQUIRED core base aui adv)
     find_package(GTK2 REQUIRED gtk)
 endif ()
 
@@ -52,21 +51,13 @@ endif ()
 
 add_executable(${PROJECT_NAME} WIN32 ${SOURCES} ${HEADERS})
 
-if (WIN32)
-    target_include_directories(${PROJECT_NAME} PRIVATE CONAN_PKG::OGRE CONAN_PKG::wxwidgets)
-    target_link_libraries(${PROJECT_NAME} PRIVATE CONAN_PKG::OGRE CONAN_PKG::wxwidgets)
-else ()
-    target_include_directories(${PROJECT_NAME} PRIVATE CONAN_PKG::OGRE)
-    target_link_libraries(${PROJECT_NAME} PRIVATE CONAN_PKG::OGRE)
+target_include_directories(${PROJECT_NAME} PRIVATE CONAN_PKG::OGRE CONAN_PKG::wxwidgets)
+target_link_libraries(${PROJECT_NAME} PRIVATE CONAN_PKG::OGRE CONAN_PKG::wxwidgets)
 
+if (UNIX)
     include_directories(${GTK2_INCLUDE_DIRS})
     add_definitions(${GTK2_DEFINITIONS})
     target_link_libraries(${PROJECT_NAME} PRIVATE ${GTK2_LIBRARIES})
-
-
-    include(${wxWidgets_USE_FILE})
-    add_definitions(-DwxUSE_GUI=1)
-    target_link_libraries(${PROJECT_NAME} PRIVATE ${wxWidgets_LIBRARIES})
 endif ()
 
 if(MESHY_USE_RTSS)
@@ -81,9 +72,9 @@ cotire(${PROJECT_NAME})
 add_custom_target(
     copy_resources
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/scripts/Resources/Fonts  ${CMAKE_BINARY_DIR}/bin/Resources/Fonts
-	COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/scripts/Resources/Icons  ${CMAKE_BINARY_DIR}/bin/Resources/Icons
-	COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/scripts/Resources/Other  ${CMAKE_BINARY_DIR}/bin/Resources/Models
-	COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/scripts/Resources/Models ${CMAKE_BINARY_DIR}/bin/Resources/Models
+  	COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/scripts/Resources/Icons  ${CMAKE_BINARY_DIR}/bin/Resources/Icons
+  	COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/scripts/Resources/Other  ${CMAKE_BINARY_DIR}/bin/Resources/Models
+  	COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/scripts/Resources/Models ${CMAKE_BINARY_DIR}/bin/Resources/Models
     COMMENT "Copy resources to build directory"
     VERBATIM
 )
