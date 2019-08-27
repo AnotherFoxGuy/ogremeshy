@@ -482,7 +482,7 @@ void MeshyMainFrameImpl::initOgre( bool bForceSetup )
 
 	Ogre::LogManager::getSingleton().getDefaultLog()->addListener( this );
 	createSystems();
-	
+
 	//Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
 	//m_wxAuiManager->AddPane( m_wxOgreRenderWindow, wxLEFT|wxTOP, wxT("OGRE Render Window"));
 	m_wxAuiManager->AddPane( m_wxOgreRenderWindow, wxAuiPaneInfo().Name(wxT("RenderWindow")).
@@ -653,9 +653,8 @@ void MeshyMainFrameImpl::showAboutBox()
 #else
 	info.SetVersion(wxT("1.11 for Linux beta"));
 #endif
-    info.SetDescription(_T("Simple application to view mesh properties\n") + descLinked);
-    info.SetCopyright(_T("(C) 2010-2015 Matias N. Goldberg \"dark_sylinc\""));
-    info.SetCopyright(_T("(C) 2015-2019 Edgar (Edgar@AnotherFoxGuy.com)"));
+	info.SetDescription(_T("Simple application to view mesh properties\n") + descLinked);
+	info.SetCopyright(_T("(C) 2010-2015 Matias N. Goldberg \"dark_sylinc\"\n(C) 2015-2019 Edgar (Edgar@AnotherFoxGuy.com)"));
 	info.AddDeveloper(_T("AnotherFoxGuy"));
 	info.AddDeveloper(_T("Matias N. Goldberg - dark_sylinc"));
 	info.AddDeveloper(_T("Thomas Fischer - tdev"));
@@ -676,7 +675,7 @@ void MeshyMainFrameImpl::openMeshDialog()
 	wxFileDialog openFileDialog( this, _("Open mesh file"), wxString( m_lastOpenMeshDir.c_str(),
 																		wxConvUTF8 ),
 								wxT(""), wxT("*.mesh"), wxFD_OPEN|wxFD_FILE_MUST_EXIST, wxDefaultPosition);
- 
+
 	if( openFileDialog.ShowModal() == wxID_OK )
         openMesh( std::string( openFileDialog.GetPath().mb_str() ) );
 }
@@ -695,7 +694,7 @@ void MeshyMainFrameImpl::openMesh( const std::string &fullPath )
 	const size_t pos			= fullPath.find_last_of("/\\");
 	const std::string path		= fullPath.substr( 0, pos );
 	const std::string meshName	= fullPath.substr( pos + 1 );
- 
+
 	if( path != "" && meshName != "" )
 	{
 		m_lastOpenMeshDir = path;
@@ -792,7 +791,7 @@ void MeshyMainFrameImpl::loadResourcesCfgDialog()
 {
 	wxFileDialog openFileDialog( this, _("Open resources.cfg file to parse"), m_lastOpenResCfgDir, wxT(""),
 								 wxT("*.cfg"), wxFD_OPEN|wxFD_FILE_MUST_EXIST, wxDefaultPosition );
- 
+
 	if( openFileDialog.ShowModal() == wxID_OK )
 	{
 		const wxString fullPath = openFileDialog.GetPath();
@@ -927,7 +926,7 @@ void MeshyMainFrameImpl::unloadResourcesCfg()
 //-----------------------------------------------------------------------------
 //showMeshInfo()
 //Description:
-//	
+//
 //-----------------------------------------------------------------------------
 void MeshyMainFrameImpl::showMeshInfo()
 {
@@ -1145,7 +1144,7 @@ void MeshyMainFrameImpl::toggleShowBoneNames()
 //-----------------------------------------------------------------------------
 //createGrid()
 //Description:
-//	
+//
 //-----------------------------------------------------------------------------
 void MeshyMainFrameImpl::createGrid()
 {
@@ -1413,7 +1412,7 @@ wxString MeshyMainFrameImpl::formatBytes( unsigned long bytes ) const
 //-----------------------------------------------------------------------------
 //takeSnapshot()
 //Description:
-//	
+//
 //Notes:
 //	1) If it fails to save the image due to write access permissions, this
 //	   function will call itself again (i.e. recursive) when askLocation ==
@@ -1454,7 +1453,7 @@ void MeshyMainFrameImpl::takeSnapshot( bool askLocation )
 		wxFileDialog saveFileDialog( this, wxT("Save screenshot"), docsDir,
 										newFileName, wxT("*.png"), wxFD_SAVE|wxFD_OVERWRITE_PROMPT,
 										wxDefaultPosition );
- 
+
 		saveDlgResult = saveFileDialog.ShowModal();
 		if( saveDlgResult == wxID_OK )
 		{
@@ -1546,7 +1545,7 @@ void MeshyMainFrameImpl::SetRTSS( bool enabled )
 {
 #ifdef MESHY_USE_RTSS
     m_menuView->Check(wxID_MENUUSERTSS,enabled) ;
-	
+
 	Ogre::Viewport *vp =  m_camera->getViewport();
 	if( vp )
 	{
@@ -1748,10 +1747,10 @@ void MeshyMainFrameImpl::messageLogged( const Ogre::String& message, Ogre::LogMe
 
 	// now if we got an error, show the log!
 	wxString msg = wxString( (message + "\n").c_str(), wxConvUTF8 );
-	
+
 	// black is the default
 	m_ogreLog->SetDefaultStyle( wxTextAttr( *wxBLACK ) );
-	
+
 	// check for the levels
 	if( lml == Ogre::LML_CRITICAL)
 		m_ogreLog->SetDefaultStyle( wxTextAttr( *wxRED ) );
@@ -1811,7 +1810,7 @@ void MeshyMainFrameImpl::messageLogged( const Ogre::String& message, Ogre::LogMe
 		// discard this ...
 		return;
 	}
-	
+
 	m_ogreLog->AppendText( msg );
 
 	if( m_ogreLog->IsShown() )
@@ -1860,12 +1859,12 @@ bool MeshyMainFrameImpl::initializeRTShaderSystem(Ogre::SceneManager* sceneMgr)
 				}
 			}
 			// Core libs path found in the current group.
-			if (coreLibsFound) 
-				break; 
+			if (coreLibsFound)
+				break;
 		}
 
 		// Core shader libs not found -> shader generating will fail.
-		if (shaderCoreLibsPath.empty())			
+		if (shaderCoreLibsPath.empty())
 			return false;*/
 
 		Ogre::StringVector groupVector = Ogre::ResourceGroupManager::getSingleton().getResourceGroups();
@@ -1939,7 +1938,7 @@ bool MeshyMainFrameImpl::initializeRTShaderSystem(Ogre::SceneManager* sceneMgr)
 }
 
 /*-----------------------------------------------------------------------------
-| Finalize the RT Shader system.	
+| Finalize the RT Shader system.
 -----------------------------------------------------------------------------*/
 void MeshyMainFrameImpl::finalizeRTShaderSystem()
 {
@@ -1948,7 +1947,7 @@ void MeshyMainFrameImpl::finalizeRTShaderSystem()
 
 	// Unregister the material manager listener.
 	if (mMaterialMgrListener != NULL)
-	{			
+	{
 		Ogre::MaterialManager::getSingleton().removeListener(mMaterialMgrListener);
 		delete mMaterialMgrListener;
 		mMaterialMgrListener = NULL;
@@ -1956,7 +1955,7 @@ void MeshyMainFrameImpl::finalizeRTShaderSystem()
 
 	// Finalize RTShader system.
     if (m_shaderGenerator != NULL)
-	{				
+	{
 		Ogre::RTShader::ShaderGenerator::destroy();
         m_shaderGenerator = NULL;
 	}

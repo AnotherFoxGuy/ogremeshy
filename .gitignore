@@ -1,8 +1,6 @@
 \.idea/
 bin
-
-cmake-build-debug/
-
+# ignore build directories
+cmake-build-*
 build/
-
 _build/

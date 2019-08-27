@@ -2,10 +2,10 @@
 # The contents of this file are placed in the public domain. Feel
 # free to make use of it in any way you like.
 #-------------------------------------------------------------------
-
-project(OgreMeshy)
-
 cmake_minimum_required(VERSION 3.10)
+
+
+project(OgreMeshy VERSION 1.11)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 #set(CMAKE_CXX_STANDARD 14)
 
@@ -71,10 +71,10 @@ cotire(${PROJECT_NAME})
 
 add_custom_target(
     copy_resources
-    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/scripts/Resources/Fonts  ${CMAKE_BINARY_DIR}/bin/Resources/Fonts
-  	COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/scripts/Resources/Icons  ${CMAKE_BINARY_DIR}/bin/Resources/Icons
-  	COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/scripts/Resources/Other  ${CMAKE_BINARY_DIR}/bin/Resources/Models
-  	COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/scripts/Resources/Models ${CMAKE_BINARY_DIR}/bin/Resources/Models
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/scripts/Resources/Fonts  ${RUNTIME_OUTPUT_DIRECTORY}/Resources/Fonts
+  	COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/scripts/Resources/Icons  ${RUNTIME_OUTPUT_DIRECTORY}/Resources/Icons
+  	COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/scripts/Resources/Other  ${RUNTIME_OUTPUT_DIRECTORY}/Resources/Models
+  	COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/scripts/Resources/Models ${RUNTIME_OUTPUT_DIRECTORY}/Resources/Models
     COMMENT "Copy resources to build directory"
     VERBATIM
 )
