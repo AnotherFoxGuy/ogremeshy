@@ -1,13 +1,11 @@
 # Defines plugins to load
 
 # Define plugin folder
-PluginFolder=@OGRE_PLUGIN_DIR@
+PluginFolder=.
 
 # Define plugins
-@OGRE_PLUGIN_RS_D3D9@
-@OGRE_PLUGIN_RS_D3D11@
-@OGRE_PLUGIN_RS_GL@
-@OGRE_PLUGIN_RS_GL3PLUS@
-@OGRE_PLUGIN_CG@
-@OGRE_PLUGIN_PARTICLEFX@
-@OGRE_PLUGIN_CODEC_FREEIMAGE@
+Plugin=Codec_FreeImage
+Plugin=RenderSystem_Direct3D9
+Plugin=RenderSystem_GL
+Plugin=Plugin_CgProgramManager
+Plugin=Plugin_ParticleFX
