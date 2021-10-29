@@ -3,7 +3,7 @@ cmake
 
 [requires]
 OGRE/1.11.6-with-patches@anotherfoxguy/stable
-wxwidgets/3.1.4@bincrafters/stable
+wxwidgets/3.1.5@bincrafters/stable
 
 [imports]
 bin, *.dll -> ./bin @ keep_path=False
