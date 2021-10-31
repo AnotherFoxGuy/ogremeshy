@@ -3,7 +3,11 @@
 # free to make use of it in any way you like.
 #-------------------------------------------------------------------
 cmake_minimum_required(VERSION 3.10)
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/" ${CMAKE_MODULE_PATH})
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMake/" ${CMAKE_MODULE_PATH})
+
+include(CMakeDependentOption)
+include(Macros)
+include(FeatureSummary)
 
 project(OgreMeshy VERSION 1.11)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -12,9 +16,7 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 #set(MESHY_USE_RTSS TRUE CACHE BOOL "use RTSS")
 set(MESHY_USE_RTSS FALSE)
 
-include(Macros)
-
-set(_PREFIX "SR_")
+set(_PREFIX "OM_")
 
 # Test if conan is installed
 find_program(CONAN_CMD_TEST conan NO_CACHE)
@@ -71,8 +73,7 @@ endif ()
 
 add_executable(${PROJECT_NAME} WIN32 ${SOURCES} ${HEADERS})
 
-target_include_directories(${PROJECT_NAME} PRIVATE CONAN_PKG::OGRE CONAN_PKG::wxwidgets)
-target_link_libraries(${PROJECT_NAME} PRIVATE CONAN_PKG::OGRE CONAN_PKG::wxwidgets)
+target_link_libraries(${PROJECT_NAME} PRIVATE OGRE::OGRE wxWidgets::wxWidgets)
 
 if (UNIX)
     include_directories(${GTK2_INCLUDE_DIRS})

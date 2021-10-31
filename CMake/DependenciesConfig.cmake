@@ -7,14 +7,12 @@ add_external_lib(
         ogre3d/1.11.6.1@anotherfoxguy/stable
         CONAN_PKG_NAME OGRE
         REQUIRED
-        # PKG_CONFIG "OGRE = 1.11.6"
         FIND_PACKAGE_OPTIONS 1.11 COMPONENTS Bites Overlay Paging RTShaderSystem MeshLodGenerator Terrain
 )
 
 add_external_lib(
-        wxwidgets
+        wxWidgets
         wxwidgets/3.1.5@bincrafters/stable
         REQUIRED
-        PKG_CONFIG "openal >= 1.18"
-        FIND_PACKAGE_OPTIONS CONFIG
+        FIND_PACKAGE
 )
