@@ -3,7 +3,7 @@
 # free to make use of it in any way you like.
 #-------------------------------------------------------------------
 cmake_minimum_required(VERSION 3.10)
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMake/" ${CMAKE_MODULE_PATH})
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/" ${CMAKE_MODULE_PATH})
 
 include(CMakeDependentOption)
 include(Macros)
