@@ -5,9 +5,8 @@ on: [ push, pull_request ]
 jobs:
   build-msvc:
     name: Windows build
-    runs-on: windows-2016
+    runs-on: windows-2019
     env:
-      DXSDK_DIR: C:\apps\Microsoft DirectX SDK\
       BUILD_TOOLS_PATH: C:\apps\build-tools\
       CONAN_REVISIONS_ENABLED: 1
     steps:
@@ -15,21 +14,23 @@ jobs:
 
       - uses: actions/checkout@v3
 
-      - name: Install Microsoft DirectX SDK and Build tools
+      - name: Install Build tools
         shell: cmake -P {0}
         run: |
-          file(MAKE_DIRECTORY $ENV{DXSDK_DIR})
-          file(DOWNLOAD http://prdownloads.sourceforge.net/rigs-of-rods/DirectX-SDK.zip "$ENV{TMP}/DirectX.zip" SHOW_PROGRESS)
-          execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf "$ENV{TMP}/DirectX.zip" WORKING_DIRECTORY "$ENV{DXSDK_DIR}")
           file(MAKE_DIRECTORY $ENV{BUILD_TOOLS_PATH})
-          file(DOWNLOAD http://prdownloads.sourceforge.net/rigs-of-rods/build-tools.zip "$ENV{TMP}/build-tools.zip" SHOW_PROGRESS)
+          file(DOWNLOAD https://cdn.anotherfoxguy.com/build-tools.zip "$ENV{TMP}/build-tools.zip" SHOW_PROGRESS)
           execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf "$ENV{TMP}/build-tools.zip" WORKING_DIRECTORY "$ENV{BUILD_TOOLS_PATH}")
 
-      - name: Cache conan packages
-        uses: actions/cache@v2.1.7
+      - name: Cache conan packages Part 1
+        uses: actions/cache@v3
         with:
-          key: conan-${{ hashFiles('cmake/DependenciesConfig.cmake') }}
+          key: conan-user-${{ hashFiles('cmake/DependenciesConfig.cmake') }}
           path: ~/.conan
+      - name: Cache conan packages Part 2
+        uses: actions/cache@v3
+        with:
+          key: conan-root-${{ hashFiles('cmake/DependenciesConfig.cmake') }}
+          path: C:/.conan/
 
       - name: Enable Developer Command Prompt
         uses: ilammy/msvc-dev-cmd@v1.10.0
@@ -45,7 +46,7 @@ jobs:
       - name: Upload redist folder
         uses: actions/upload-artifact@v2
         with:
-          name: ror-win
+          name: meshy-win
           path: redist
 
       - name: Clean Conan pkgs

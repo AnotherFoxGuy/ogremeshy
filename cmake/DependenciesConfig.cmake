@@ -16,3 +16,13 @@ add_external_lib(
         REQUIRED
         FIND_PACKAGE
 )
+
+add_external_lib(
+        zlib
+        zlib/1.2.12
+)
+
+add_external_lib(
+        libtiff
+        libtiff/4.4.0
+)

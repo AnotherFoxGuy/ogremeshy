@@ -33,14 +33,6 @@ cmd_option(${_PREFIX}LIB_PREFERENCE
 # Special mode, that will force dependencies to the packages provided by system unless they were set to conan explicitly.
 option(${_PREFIX}FORCE_SYSTEM_DEPENDENCIES "Force the use of system packages")
 
-
-################################################################################
-# Check for dependencies
-################################################################################
-include(DependenciesConfig)
-resolve_conan_dependencies()
-
-
 if (UNIX)
     find_package(GTK2 REQUIRED gtk)
 endif ()
@@ -48,6 +40,12 @@ endif ()
 SET(RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/")
 SET(LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/")
 SET(ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/")
+
+################################################################################
+# Check for dependencies
+################################################################################
+include(DependenciesConfig)
+resolve_conan_dependencies()
 
 # Setup our application
 if (MSVC)
