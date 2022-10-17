@@ -3,15 +3,16 @@ include(conan)
 include(FindPkgConfig)
 
 if (USE_PACKAGE_MANAGER)
+    set(ENV{CONAN_REVISIONS_ENABLED} 1)
     conan_add_remote(
-        NAME rigs-of-rods-deps-V2
-        URL https://artifactory.anotherfoxguy.com/artifactory/api/conan/rigs-of-rods
-        VERIFY_SSL True
+            NAME gitea-afg
+            URL https://git.anotherfoxguy.com/api/packages/AnotherFoxGuy/conan
+            VERIFY_SSL True
     )
     conan_add_remote(
-        NAME bincrafters-artifactory
-        URL https://bincrafters.jfrog.io/artifactory/api/conan/public-conan
-        VERIFY_SSL True
+            NAME bincrafters-artifactory
+            URL https://bincrafters.jfrog.io/artifactory/api/conan/public-conan
+            VERIFY_SSL True
     )
 endif ()
 

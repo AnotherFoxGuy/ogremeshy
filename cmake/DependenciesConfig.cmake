@@ -26,3 +26,8 @@ add_external_lib(
         libtiff
         libtiff/4.4.0
 )
+
+add_external_lib(
+        libpng
+        libpng/1.6.37
+)
